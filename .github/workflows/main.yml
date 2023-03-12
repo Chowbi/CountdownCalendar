@@ -20,7 +20,9 @@ jobs:
       run: dotnet workload install wasm-tools
     - name: Publish .NET Core Project
       run: dotnet publish CountdownCalendar.csproj -c:Release -p:GHPages=true -o:release --nologo
-    - name: Deploy GitHub Pages site
-      uses: actions/deploy-pages@v1.2.5
+    - name: Commit wwwroot to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@4.4.1
       with:
-        artifact_name: release
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: main
+        FOLDER: release/wwwroot
