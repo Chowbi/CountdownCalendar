@@ -1,0 +1,154 @@
+﻿@page "/"
+@using System.Globalization;
+
+<h1 class="d-print-none">Countdown Calendar</h1>
+<div class="d-flex flex-row justify-content-center d-print-none">
+    <div class="form-group d-flex flex-row me-4">
+        <label for="start" class="col-form-label me-2">Start</label>
+        <InputDate @bind-Value="Start" class="form-control" id="start" />
+    </div>
+    <div class="form-group d-flex flex-row me-4">
+        <label for="goal" class="col-form-label me-2">Goal</label>
+        <InputDate @bind-Value="Goal" class="form-control" id="goal" />
+    </div>
+    <div class="form-group d-flex flex-row me-4">
+        <label for="end" class="col-form-label me-2">End</label>
+        <InputDate @bind-Value="End" class="form-control" id="end" />
+    </div>
+    <div class="form-group d-flex flex-row me-4">
+        <label for="format" class="col-form-label me-2">Format</label>
+        <InputText @bind-Value="Format" class="form-control" id="format" />
+    </div>
+    <div class="form-group d-flex flex-row me-4">
+        <label for="format" class="col-form-label me-2">Language</label>
+        <InputText @bind-Value="Language" class="form-control" id="language" />
+    </div>
+</div>
+
+<table class="table table-borderless" style="table-layout: fixed">
+    @foreach (List<(int diff, DateTime date)> line in _Dates)
+    {
+        <tr>
+            @foreach ((int diff, DateTime date) in line)
+            {
+                <td>
+                    <table class="table table-bordered border-3" style="table-layout: fixed">
+                        <thead>
+                            <tr><td class="text-center">@date.ToString(Format, _Ci)</td></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="text-center fs-1">@diff</td></tr>
+                        </tbody>
+                    </table>
+                </td>
+            }
+
+        </tr>
+    }
+</table>
+
+@code {
+    CultureInfo _DefaultCi = new("en-us");
+    CultureInfo _Ci = new("en-us");
+    [Inject]
+    public IJSRuntime? _IJSRuntime { get; set; }
+    DateTime _Start = DateTime.Today;
+    DateTime Start
+    {
+        get => _Start;
+        set
+        {
+            if (value != _Start)
+            {
+                _Start = value;
+                RebuiltList();
+            }
+        }
+    }
+    DateTime _Goal = DateTime.Today.AddDays(20);
+    DateTime Goal
+    {
+        get => _Goal;
+        set
+        {
+            if (value != _Goal)
+            {
+                _Goal = value;
+                RebuiltList();
+            }
+        }
+    }
+    DateTime _End = DateTime.Today.AddDays(30);
+    DateTime End
+    {
+        get => _End;
+
+        set
+        {
+            if (value != _End)
+            {
+                _End = value;
+                RebuiltList();
+            }
+        }
+    }
+    string Format { get; set; } = "dddd dd MMMM yyyy";
+    string Language
+    {
+        get => _Ci.Name; set
+        {
+            try
+            {
+                _Ci = new(value);
+            }
+            catch
+            {
+                _Ci = _DefaultCi;
+            }
+        }
+    }
+
+    List<List<(int diff, DateTime date)>> _Dates = new();
+
+    void RebuiltList()
+    {
+        _Dates.Clear();
+        DateTime current = Start;
+        int count = 0;
+        List<(int diff, DateTime date)> line = null!;
+        while (current <= End)
+        {
+            if (count % 7 == 0)
+            {
+                line = new();
+                _Dates.Add(line);
+            }
+            int diff = (int)(current - Goal).TotalDays;
+            line.Add((diff, current));
+            count++;
+            current = current.AddDays(1);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(RebuiltList);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (_IJSRuntime == null)
+                _Ci = _DefaultCi;
+            else
+            {
+                using Task<string> task = _IJSRuntime.InvokeAsync<string>("getLanguage").AsTask();
+                using Task<string> continuation = task.ContinueWith(t => t.Result);
+                string result = await continuation;
+                _Ci = new(result);
+            }
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
