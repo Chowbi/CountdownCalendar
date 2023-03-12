@@ -30,3 +30,16 @@ h1:focus {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.calendar-date {
+    border: 3px solid darkgrey;
+    padding:0.2rem;
+    margin:0.2rem;
+}
+
+.calendar-countdown {
+    font-size: 3rem !important;
+    border-bottom: 3px solid darkgrey;
+    margin: 0.2rem;
+    margin-bottom: 2rem;
+}

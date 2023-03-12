@@ -2,7 +2,7 @@
 @using System.Globalization;
 
 <h1 class="d-print-none">Countdown Calendar</h1>
-<div class="d-flex flex-row justify-content-center d-print-none">
+<div class="d-flex flex-row justify-content-center d-print-none mb-2">
     <div class="form-group d-flex flex-row me-4">
         <label for="start" class="col-form-label me-2">Start</label>
         <InputDate @bind-Value="Start" class="form-control" id="start" />
@@ -25,30 +25,35 @@
     </div>
 </div>
 
-<table class="table table-borderless align-middle" style="table-layout: fixed;">
+<div class="p-4">
     @foreach (List<(int diff, DateTime date)> line in _Dates)
     {
-        <tr>
+        <div class="row">
             @foreach ((int diff, DateTime date) in line)
             {
-                <td class="text-center text-big"
-            style="border-bottom:3px solid grey; border-top:3px solid darkgrey; border-left:3px solid darkgrey; border-right:3px solid darkgrey; padding:2px 2px 2px 0">
+                <div class="col text-center calendar-date">
                     @date.ToString(Format, _Ci)
-                </td>
+                </div>
             }
-        </tr>
-        <tr>
+            @for (int i = 0; i < 7 - line.Count; i++)
+            {
+                <div class="col calendar-date"></div>
+            }
+        </div>
+        <div class="row">
             @foreach ((int diff, DateTime date) in line)
             {
-                <td class="text-center fs-1"
-            style="border-top:3px solid grey; border-bottom:3px solid darkgrey; border-left:3px solid darkgrey; border-right:3px solid darkgrey; padding:2px 2px 0 2px">
+                <div class="col text-center calendar-countdown">
                     @diff
-                </td>
+                </div>
             }
-        </tr>
-        <tr style="border-collapse:separate;"><td colspan="7"></td></tr>
+            @for (int i = 0; i < 7 - line.Count; i++)
+            {
+                <div class="col calendar-countdown"></div>
+            }
+        </div>
     }
-</table>
+</div>
 
 @code {
     CultureInfo _DefaultCi = new("en-us");
