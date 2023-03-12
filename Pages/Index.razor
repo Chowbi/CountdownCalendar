@@ -25,25 +25,28 @@
     </div>
 </div>
 
-<table class="table table-borderless" style="table-layout: fixed">
+<table class="table table-borderless align-middle" style="table-layout: fixed;">
     @foreach (List<(int diff, DateTime date)> line in _Dates)
     {
         <tr>
             @foreach ((int diff, DateTime date) in line)
             {
-                <td>
-                    <table class="table table-bordered border-3" style="table-layout: fixed">
-                        <thead>
-                            <tr><td class="text-center">@date.ToString(Format, _Ci)</td></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td class="text-center fs-1">@diff</td></tr>
-                        </tbody>
-                    </table>
+                <td class="text-center text-big"
+            style="border-bottom:3px solid grey; border-top:3px solid darkgrey; border-left:3px solid darkgrey; border-right:3px solid darkgrey; padding:2px 2px 2px 0">
+                    @date.ToString(Format, _Ci)
                 </td>
             }
-
         </tr>
+        <tr>
+            @foreach ((int diff, DateTime date) in line)
+            {
+                <td class="text-center fs-1"
+            style="border-top:3px solid grey; border-bottom:3px solid darkgrey; border-left:3px solid darkgrey; border-right:3px solid darkgrey; padding:2px 2px 0 2px">
+                    @diff
+                </td>
+            }
+        </tr>
+        <tr style="border-collapse:separate;"><td colspan="7"></td></tr>
     }
 </table>
 
