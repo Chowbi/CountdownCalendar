@@ -20,3 +20,5 @@ jobs:
       run: dotnet publish CountdownCalendar.csproj -c Release -o release --nologo
     - name: Deploy GitHub Pages site
       uses: actions/deploy-pages@v1.2.5
+      with:
+        artifact_name: release
